@@ -1,0 +1,115 @@
+import turtle
+import math
+
+# Global variable to store the expression entered
+expression = ""
+
+# Update the expression and display it
+def update_expression(value):
+    global expression
+    expression += str(value)
+    text_display.clear()
+    text_display.write(expression, align="right", font=("Arial", 20, "normal"))
+
+# Function to clear the expression
+def clear_expression():
+    global expression
+    expression = ""
+    text_display.clear()
+
+# Function to evaluate the expression and display the result
+def calculate():
+    global expression
+    try:
+        result = eval(expression)
+        expression = str(result)
+    except Exception as e:
+        expression = "Error"
+    text_display.clear()
+    text_display.write(expression, align="right", font=("Arial", 20, "normal"))
+
+# Function for specific scientific operations
+def calculate_scientific(func):
+    global expression
+    try:
+        result = str(func(float(expression)))
+        expression = result
+        text_display.clear()
+        text_display.write(expression, align="right", font=("Arial", 20, "normal"))
+    except Exception as e:
+        expression = "Error"
+        text_display.clear()
+        text_display.write(expression, align="right", font=("Arial", 20, "normal"))
+
+# Set up the Turtle screen
+screen = turtle.Screen()
+screen.title("Scientific Calculator")
+screen.bgcolor("lightblue")
+
+# Create turtle object for drawing buttons
+button_turtle = turtle.Turtle()
+button_turtle.penup()
+button_turtle.hideturtle()
+
+# Create turtle for text display
+text_display = turtle.Turtle()
+text_display.penup()
+text_display.hideturtle()
+text_display.goto(200, 220)
+
+# Function to create calculator buttons
+def create_button(x, y, text, width, height, func, *args):
+    button_turtle.goto(x, y)
+    button_turtle.begin_fill()
+    for _ in range(2):
+        button_turtle.forward(width)
+        button_turtle.left(90)
+        button_turtle.forward(height)
+        button_turtle.left(90)
+    button_turtle.end_fill()
+    
+    button_turtle.goto(x + width / 2, y + height / 4)
+    button_turtle.write(text, align="center", font=("Arial", 16, "normal"))
+    
+    screen.onclick(lambda x_click, y_click: func(*args) if x <= x_click <= x + width and y <= y_click <= y + height else None)
+
+# Button layout and function setup
+button_list = [
+    (0, 150, "7", 60, 40, update_expression, 7),
+    (70, 150, "8", 60, 40, update_expression, 8),
+    (140, 150, "9", 60, 40, update_expression, 9),
+    (210, 150, "/", 60, 40, update_expression, "/"),
+    
+    (0, 100, "4", 60, 40, update_expression, 4),
+    (70, 100, "5", 60, 40, update_expression, 5),
+    (140, 100, "6", 60, 40, update_expression, 6),
+    (210, 100, "*", 60, 40, update_expression, "*"),
+    
+    (0, 50, "1", 60, 40, update_expression, 1),
+    (70, 50, "2", 60, 40, update_expression, 2),
+    (140, 50, "3", 60, 40, update_expression, 3),
+    (210, 50, "-", 60, 40, update_expression, "-"),
+    
+    (0, 0, "0", 60, 40, update_expression, 0),
+    (70, 0, ".", 60, 40, update_expression, "."),
+    (140, 0, "C", 60, 40, clear_expression),
+    (210, 0, "+", 60, 40, update_expression, "+"),
+    
+    (0, -50, "(", 60, 40, update_expression, "("),
+    (70, -50, ")", 60, 40, update_expression, ")"),
+    (140, -50, "=", 60, 40, calculate),
+    (210, -50, "sin", 60, 40, calculate_scientific, math.sin),
+    
+    (0, -100, "cos", 60, 40, calculate_scientific, math.cos),
+    (70, -100, "tan", 60, 40, calculate_scientific, math.tan),
+    (140, -100, "log", 60, 40, calculate_scientific, math.log),
+    (210, -100, "sqrt", 60, 40, calculate_scientific, math.sqrt)
+]
+
+# Create all buttons
+for button in button_list:
+    create_button(*button)
+
+# Hide the button turtle and run the main loop
+button_turtle.hideturtle()
+screen.mainloop()
